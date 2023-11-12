@@ -1,0 +1,25 @@
+{
+  "name": "cubietruck-leds-gpio",
+  "version": "1.0.0",
+  "description": "Managing leds and gpio on cubietruck",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node ./src/index.js", 
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yaroshvitaliy/cubietruck-leds-gpio.git"
+  },
+  "keywords": [
+    "cubietruck",
+    "gpio"
+  ],
+  "author": "Vitalii Yaroshenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Yaroshvitaliy/cubietruck-leds-gpio/issues"
+  },
+  "homepage": "https://github.com/Yaroshvitaliy/cubietruck-leds-gpio#readme",
+  "type": "module"
+}
