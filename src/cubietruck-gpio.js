@@ -1,4 +1,3 @@
-import exp from 'constants';
 import { readFile, writeFile, access, readdir } from 'fs/promises';
 
 const GPIO_DIR = '/sys/class/gpio/';
@@ -11,7 +10,7 @@ export const GPIO_CONSTANTS = {
     GPIO_IN_DIRECTION: 'in',
     GPIO_OUT_DIRECTION: 'out',
     GPIO_MIN_PIN: 1,
-    GPIO_MAX_PIN: 18
+    GPIO_MAX_PIN: 17
 };
 
 const isPinValid = (pin) => pin >= GPIO_CONSTANTS.GPIO_MIN_PIN && pin <= GPIO_CONSTANTS.GPIO_MAX_PIN;
