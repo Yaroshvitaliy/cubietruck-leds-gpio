@@ -2,59 +2,64 @@ import { readFile, writeFile } from 'fs/promises';
 
 const getLedValueFileName = (color) => `/sys/class/leds/cubietruck:${color}:usr/brightness`;
 
+const LED_COLOR = {
+    BLUE: 'blue',
+    ORANGE: 'orange',
+    WHITE: 'white',
+    GREEN: 'green'
+};
+
 export const LED_CONSTANTS = {
     LED_OFF_VALUE: '0',
     LED_ON_VALUE:  '1',
-    LED_COLOR: {
-        BLUE: 'blue',
-        ORANGE: 'orange',
-        WHITE: 'white',
-        GREEN: 'green'
-    }
+    LED_COLOR,
+    ALL_LED_COLORS: [
+        LED_COLOR.BLUE, 
+        LED_COLOR.ORANGE, 
+        LED_COLOR.WHITE, 
+        LED_COLOR.GREEN
+    ]
 };
 
-export const allLedColors = [
-    LED_CONSTANTS.LED_COLOR.BLUE, 
-    LED_CONSTANTS.LED_COLOR.ORANGE, 
-    LED_CONSTANTS.LED_COLOR.WHITE, 
-    LED_CONSTANTS.LED_COLOR.GREEN
-];
-
-export const getLed = async (color) => {
+const getLed = async (color) => {
     const fileName = getLedValueFileName(color);
     const data = await readFile(fileName, 'utf8');
     const value = data && data.length > 0 && data[0] === LED_CONSTANTS.LED_ON_VALUE;
     return value;
 };
 
-export const setLed = async (color, value) => {
+const setLed = async (color, value) => {
     const fileName = getLedValueFileName(color);
     const data = value ? LED_CONSTANTS.LED_ON_VALUE : LED_CONSTANTS.LED_OFF_VALUE;
     return await writeFile(fileName, data);
 };
 
-export const toggleLed = async (color) => {
+const toggleLed = async (color) => {
     const oldValue = await getLed(color);
-    const value = !oldValue;
-    return await setLed(color, value);
+    const newValue = !oldValue;
+    return await setLed(color, newValue);
 };
 
-export const getAllLeds = async () =>
+export const getLeds = async (colors) => 
     await Promise.all(
-        allLedColors.map(async (color) => { 
+        await colors.reduce(async (acc, color) => {
             const value = await getLed(color);
-            return { color, value };
-        })
+            acc[color] = value;
+            return acc;
+        }, {})
     );
 
-export const setAllLeds = async (value) =>
+export const setLeds = async (colorToValueMap) => {
+    const colorValueEntries = Object.entries(colorToValueMap);
     await Promise.all(
-        allLedColors.map(async (color) => 
+        await colorValueEntries
+        .map(async ([color, value]) => 
             await setLed(color, value)
         )
     );
+};
 
-export const toggleAllLeds = async () => 
+export const toggleLeds = async (colors) => 
     await Promise.all(
-        allLedColors.map(toggleLed)
+        await colors.map(toggleLed)
     );

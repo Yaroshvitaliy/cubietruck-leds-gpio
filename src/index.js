@@ -1,12 +1,8 @@
 import {
 	LED_CONSTANTS,
-    allLedColors,
-	getLed,
-    setLed,
-    toggleLed,
-	getAllLeds,
-	setAllLeds,
-	toggleAllLeds
+	getLeds,
+	setLeds,
+	toggleLeds
 } from './cubietruck-leds.js';
 
 import {
@@ -19,7 +15,7 @@ import {
 	setPinDirection,
 	getPinValue,
 	setPinValue
-} from './cubietruck-gpio.js';
+} from './cubietruck-gpio-sysfs.js';
 
 import {
 	detectGpio,
@@ -27,18 +23,24 @@ import {
 	getPinValues,
 	setPinValues,
 	togglePinValues
-} from './cubietruck-gpio-api.js';
+} from './cubietruck-gpio-device.js';
 
 let ledColorIndex = 0;
 let forwardDirection = true; 
 let timerId;
 
 const ledsFwrdBwrdInf = async () => {
-	allLedColors.forEach(async (color) => 
-		await setLed(color, ledColorIndex === allLedColors.indexOf(color))
-	);
+	const colorToValueMap = 
+		LED_CONSTANTS.ALL_LED_COLORS
+		.reduce((acc, color) => {
+			const value = ledColorIndex === LED_CONSTANTS.ALL_LED_COLORS.indexOf(color);
+			acc[color] = value;
+			return acc;
+		}, {});
 
-	forwardDirection && (ledColorIndex === allLedColors.length - 1) && (forwardDirection = false);
+	await setLeds(colorToValueMap);
+
+	forwardDirection && (ledColorIndex === ALL_LED_COLORS.length - 1) && (forwardDirection = false);
 	!forwardDirection && (ledColorIndex === 0) && (forwardDirection = true);
 	forwardDirection ? (ledColorIndex++) : (ledColorIndex--);
 
@@ -50,7 +52,16 @@ const ledsFwrdBwrdInf = async () => {
 
 const handleExit = async () => {
 	clearTimeout(timerId);
-	await setAllLeds(false);
+
+	const colorToValueMap = 
+		LED_CONSTANTS.ALL_LED_COLORS
+		.reduce((acc, color) => {
+			acc[color] = false;
+			return acc;
+		}, {});
+
+	await setLeds(colorToValueMap);
+
 	process.exit();
 };
 

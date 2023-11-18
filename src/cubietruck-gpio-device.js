@@ -1,5 +1,4 @@
 import { exec } from 'child_process';
-import { stdout } from 'process';
 
 const GPIO_OFF_VALUE = '0';
 const GPIO_ON_VALUE = '1';
@@ -10,13 +9,16 @@ const GPIO_GET_CMD = 'gpioget';
 const GPIO_SET_CMD = 'gpioset';
 
 const createGpioInfoCommand = (bank) => 
-    typeof bank !== 'undefined' && bank !== null ? `${GPIO_INFO_CMD} ${bank}` : GPIO_INFO_CMD;
+    typeof bank !== 'undefined' && bank !== null 
+        ? `${GPIO_INFO_CMD} ${bank}` 
+        : GPIO_INFO_CMD;
 
 const createGpioGetCommand = (bank, pins) => 
     `${GPIO_GET_CMD} ${bank} ${pins.join(' ')}`;
 
 const createGpioSetCommand = (bank, pinToValueMap) => {
-    const pinCmd = Object.entries(pinToValueMap)
+    const pinCmd = 
+        Object.entries(pinToValueMap)
         .map(([pin, value]) => 
             `${pin}=${value ? GPIO_ON_VALUE : GPIO_OFF_VALUE}`
         )
@@ -34,7 +36,8 @@ const createGpioInfoResult = (stdout) => {
 };
 
 const createGetPinResult = (stdout, pins) => {
-    const pinToValueMap = stdout
+    const pinToValueMap = 
+        stdout
         .split(' ')
         .map(v => v === GPIO_ON_VALUE)
         .map((v, i) => [pins[i], v])
@@ -88,7 +91,8 @@ export const setPinValues = async (bank, pinToValueMap) => {
 
 export const togglePinValues = async (bank, pins) => {
     const oldPinToValueMap = await getPinValues(bank, pins);
-    const newPinToValueMap = Object.entries(oldPinToValueMap)
+    const newPinToValueMap = 
+        Object.entries(oldPinToValueMap)
         .reduce((acc, [p, v]) => {
             acc[p] = !v;
             return acc;
