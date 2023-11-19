@@ -43,21 +43,20 @@ const toggleLed = async (color) => {
 export const getLeds = async (colors) => 
     await Promise.all(
         await colors.reduce(async (acc, color) => {
+            const a = await acc;
             const value = await getLed(color);
-            acc[color] = value;
-            return acc;
+            a[color] = value;
+            return a;
         }, {})
     );
 
-export const setLeds = async (colorToValueMap) => {
-    const colorValueEntries = Object.entries(colorToValueMap);
+export const setLeds = async (colorToValueMap) => 
     await Promise.all(
-        await colorValueEntries
+        await Object.entries(colorToValueMap)
         .map(async ([color, value]) => 
             await setLed(color, value)
         )
     );
-};
 
 export const toggleLeds = async (colors) => 
     await Promise.all(
