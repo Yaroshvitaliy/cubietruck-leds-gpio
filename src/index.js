@@ -199,7 +199,6 @@ if (process.argv.length < 3) {
 						console.log('GPIO get');
 						console.log(JSON.stringify(await getPinValues(0, apiPins)));
 						break;
-
 								
 					case TASKS.GPIO_API_GET_ALL:
 						console.log('GPIO get all');
