@@ -1,16 +1,12 @@
 import {
 	LED_CONSTANTS,
-    allLedColors,
-	getLed,
-    setLed,
-    toggleLed,
-	getAllLeds,
-	setAllLeds,
-	toggleAllLeds
-} from './cubietruck-leds.js';
+	getLeds,
+	setLeds,
+	toggleLeds
+} from './leds.js';
 
 import {
-	GPIO_CONSTANTS,
+	GPIO_SYSFS_CONSTANTS,
 	getExportedPins,
 	isPinExported,
 	exportPin,
@@ -19,7 +15,7 @@ import {
 	setPinDirection,
 	getPinValue,
 	setPinValue
-} from './cubietruck-gpio.js';
+} from './gpio-sysfs.js';
 
 import {
 	detectGpio,
@@ -27,18 +23,24 @@ import {
 	getPinValues,
 	setPinValues,
 	togglePinValues
-} from './cubietruck-gpio-api.js';
+} from './gpio-device.js';
 
 let ledColorIndex = 0;
 let forwardDirection = true; 
 let timerId;
 
 const ledsFwrdBwrdInf = async () => {
-	allLedColors.forEach(async (color) => 
-		await setLed(color, ledColorIndex === allLedColors.indexOf(color))
-	);
+	const colorToValueMap = 
+		LED_CONSTANTS.ALL_LED_COLORS
+		.reduce((acc, color) => {
+			const value = ledColorIndex === LED_CONSTANTS.ALL_LED_COLORS.indexOf(color);
+			acc[color] = value;
+			return acc;
+		}, {});
 
-	forwardDirection && (ledColorIndex === allLedColors.length - 1) && (forwardDirection = false);
+	await setLeds(colorToValueMap);
+
+	forwardDirection && (ledColorIndex === LED_CONSTANTS.ALL_LED_COLORS.length - 1) && (forwardDirection = false);
 	!forwardDirection && (ledColorIndex === 0) && (forwardDirection = true);
 	forwardDirection ? (ledColorIndex++) : (ledColorIndex--);
 
@@ -50,7 +52,16 @@ const ledsFwrdBwrdInf = async () => {
 
 const handleExit = async () => {
 	clearTimeout(timerId);
-	await setAllLeds(false);
+
+	const colorToValueMap = 
+		LED_CONSTANTS.ALL_LED_COLORS
+		.reduce((acc, color) => {
+			acc[color] = false;
+			return acc;
+		}, {});
+
+	await setLeds(colorToValueMap);
+
 	process.exit();
 };
 
@@ -149,23 +160,23 @@ if (process.argv.length < 3) {
 						console.log('Exported pins:', await getExportedPins());
 						console.log(`Pin ${pin} direction:`, await getPinDirection(pin));
 						console.log(`Set out direction`);
-						await setPinDirection(pin, GPIO_CONSTANTS.GPIO_OUT_DIRECTION);	
+						await setPinDirection(pin, GPIO_SYSFS_CONSTANTS.GPIO_OUT_DIRECTION);	
 						console.log(`Pin ${pin} direction:`, await getPinDirection(pin));	
 						console.log(`Set in direction`);
-						await setPinDirection(pin, GPIO_CONSTANTS.GPIO_IN_DIRECTION);	
+						await setPinDirection(pin, GPIO_SYSFS_CONSTANTS.GPIO_IN_DIRECTION);	
 						console.log(`Pin ${pin} direction:`, await getPinDirection(pin));
 						console.log(`Set out direction`);
-						await setPinDirection(pin, GPIO_CONSTANTS.GPIO_OUT_DIRECTION);		
+						await setPinDirection(pin, GPIO_SYSFS_CONSTANTS.GPIO_OUT_DIRECTION);		
 						break;
 
 					case TASKS.GPIO_SET_VALUE:
 						console.log('Exported pins:', await getExportedPins());
 						console.log(`Pin ${pin} value:`, await getPinValue(pin));
 						console.log(`Set off`);
-						await setPinValue(pin, GPIO_CONSTANTS.GPIO_OFF_VALUE);	
+						await setPinValue(pin, GPIO_SYSFS_CONSTANTS.GPIO_OFF_VALUE);	
 						console.log(`Pin ${pin} value:`, await getPinValue(pin));	
 						console.log(`Set on`);
-						await setPinValue(pin, GPIO_CONSTANTS.GPIO_ON_VALUE);	
+						await setPinValue(pin, GPIO_SYSFS_CONSTANTS.GPIO_ON_VALUE);	
 						console.log(`Pin ${pin} value:`, await getPinValue(pin));
 						break;
 

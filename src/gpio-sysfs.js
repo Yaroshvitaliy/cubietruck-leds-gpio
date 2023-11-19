@@ -4,33 +4,31 @@ const GPIO_DIR = '/sys/class/gpio/';
 const GPIO_EXPORT_FILE_NAME = `${GPIO_DIR}export`;
 const GPIO_UNEXPORT_FILE_NAME = `${GPIO_DIR}unexport`;
 
-export const GPIO_CONSTANTS = {
+export const GPIO_SYSFS_CONSTANTS = {
     GPIO_OFF_VALUE: '0',
     GPIO_ON_VALUE:  '1',
     GPIO_IN_DIRECTION: 'in',
-    GPIO_OUT_DIRECTION: 'out',
-    GPIO_MIN_PIN: 1,
-    GPIO_MAX_PIN: 17
+    GPIO_OUT_DIRECTION: 'out'
 };
 
-const isPinValid = (pin) => pin >= GPIO_CONSTANTS.GPIO_MIN_PIN && pin <= GPIO_CONSTANTS.GPIO_MAX_PIN;
+const isPinValid = (pin) => pin >= 0
 
 const createInvalidPinErrMsg = (message, pin) => 
-    `${message}. Wrong pin provided: '${pin}'. Possible values: ${GPIO_CONSTANTS.GPIO_MIN_PIN} to ${GPIO_CONSTANTS.GPIO_MAX_PIN}`; 
+    `${message}. Wrong pin provided: '${pin}'`; 
 
 const isDirectionValid = (direction) => 
-    [GPIO_CONSTANTS.GPIO_IN_DIRECTION, GPIO_CONSTANTS.GPIO_OUT_DIRECTION]
+    [GPIO_SYSFS_CONSTANTS.GPIO_IN_DIRECTION, GPIO_SYSFS_CONSTANTS.GPIO_OUT_DIRECTION]
     .includes(direction);
 
 const createInvalidDirectionErrMsg = (message, direction) =>
-    `${message}. Wrong direction provided: '${direction}'. Possible values: ${GPIO_CONSTANTS.GPIO_IN_DIRECTION}, ${GPIO_CONSTANTS.GPIO_OUT_DIRECTION}`;
+    `${message}. Wrong direction provided: '${direction}'. Possible values: ${GPIO_SYSFS_CONSTANTS.GPIO_IN_DIRECTION}, ${GPIO_SYSFS_CONSTANTS.GPIO_OUT_DIRECTION}`;
 
 const isPinValueValid = (value) =>
-    [GPIO_CONSTANTS.GPIO_OFF_VALUE, GPIO_CONSTANTS.GPIO_ON_VALUE]
+    [GPIO_SYSFS_CONSTANTS.GPIO_OFF_VALUE, GPIO_SYSFS_CONSTANTS.GPIO_ON_VALUE]
     .includes(value);
 
 const createInvalidValueErrMsg = (message, value) =>
-    `${message}. Wrong value provided: '${direction}'. Possible values: ${GPIO_CONSTANTS.GPIO_OFF_VALUE}, ${GPIO_CONSTANTS.GPIO_ON_VALUE}`;
+    `${message}. Wrong value provided: '${value}'. Possible values: ${GPIO_SYSFS_CONSTANTS.GPIO_OFF_VALUE}, ${GPIO_SYSFS_CONSTANTS.GPIO_ON_VALUE}`;
 
 const getPinDir = (pin) => `${GPIO_DIR}gpio${pin}/`;
 
@@ -86,12 +84,12 @@ export const getPinDirection = async (pin) => {
     const directionFileName = getDirectionFileName(pin);
     const data = await readFile(directionFileName, 'utf8');
 
-    if (data.includes(GPIO_CONSTANTS.GPIO_IN_DIRECTION)) {
-        return GPIO_CONSTANTS.GPIO_IN_DIRECTION;
+    if (data.includes(GPIO_SYSFS_CONSTANTS.GPIO_IN_DIRECTION)) {
+        return GPIO_SYSFS_CONSTANTS.GPIO_IN_DIRECTION;
     }
 
-    if (data.includes(GPIO_CONSTANTS.GPIO_OUT_DIRECTION)) {
-        return GPIO_CONSTANTS.GPIO_OUT_DIRECTION;
+    if (data.includes(GPIO_SYSFS_CONSTANTS.GPIO_OUT_DIRECTION)) {
+        return GPIO_SYSFS_CONSTANTS.GPIO_OUT_DIRECTION;
     }
 
     throw new Error(`Failed to get a direction of a pin: '${pin}'`);
@@ -103,7 +101,7 @@ export const setPinDirection = async (pin, direction) => {
     }
 
     if (!isDirectionValid(direction)) {
-        throw new Error(createInvalidDirectionErrMsg(`Failed to set a direction for a pin: '${pin}'`), pin);
+        throw new Error(createInvalidDirectionErrMsg(`Failed to set a direction for a pin: '${pin}'`), direction);
     }
 
     const directionFileName = getDirectionFileName(pin);
@@ -118,12 +116,12 @@ export const getPinValue = async (pin) => {
     const valueFileName = getValueFileName(pin);
     const data = await readFile(valueFileName, 'utf8');
 
-    if (data.includes(GPIO_CONSTANTS.GPIO_OFF_VALUE)) {
-        return GPIO_CONSTANTS.GPIO_OFF_VALUE;
+    if (data.includes(GPIO_SYSFS_CONSTANTS.GPIO_OFF_VALUE)) {
+        return GPIO_SYSFS_CONSTANTS.GPIO_OFF_VALUE;
     }
 
-    if (data.includes(GPIO_CONSTANTS.GPIO_ON_VALUE)) {
-        return GPIO_CONSTANTS.GPIO_ON_VALUE;
+    if (data.includes(GPIO_SYSFS_CONSTANTS.GPIO_ON_VALUE)) {
+        return GPIO_SYSFS_CONSTANTS.GPIO_ON_VALUE;
     }
 
     throw new Error(`Failed to get a value of a pin: '${pin}'`);
