@@ -40,7 +40,7 @@ const ledsFwrdBwrdInf = async () => {
 
 	await setLeds(colorToValueMap);
 
-	forwardDirection && (ledColorIndex === ALL_LED_COLORS.length - 1) && (forwardDirection = false);
+	forwardDirection && (ledColorIndex === LED_CONSTANTS.ALL_LED_COLORS.length - 1) && (forwardDirection = false);
 	!forwardDirection && (ledColorIndex === 0) && (forwardDirection = true);
 	forwardDirection ? (ledColorIndex++) : (ledColorIndex--);
 
