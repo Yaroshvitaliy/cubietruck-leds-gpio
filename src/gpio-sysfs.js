@@ -11,7 +11,7 @@ export const GPIO_SYSFS_CONSTANTS = {
     GPIO_OUT_DIRECTION: 'out'
 };
 
-const isPinValid = (pin) => pin >= 0
+const isPinValid = (pin) => pin >= 0;
 
 const createInvalidPinErrMsg = (message, pin) => 
     `${message}. Wrong pin provided: '${pin}'`; 
