@@ -6,7 +6,7 @@ const GPIO_UNEXPORT_FILE_NAME = `${GPIO_DIR}unexport`;
 
 export const GPIO_SYSFS_CONSTANTS = {
     GPIO_OFF_VALUE: '0',
-    GPIO_ON_VALUE:  '1',
+    GPIO_ON_VALUE: '1',
     GPIO_IN_DIRECTION: 'in',
     GPIO_OUT_DIRECTION: 'out'
 };

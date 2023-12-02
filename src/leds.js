@@ -11,7 +11,7 @@ const LED_COLOR = {
 
 export const LED_CONSTANTS = {
     LED_OFF_VALUE: '0',
-    LED_ON_VALUE:  '1',
+    LED_ON_VALUE: '1',
     LED_COLOR,
     ALL_LED_COLORS: [
         LED_COLOR.BLUE, 
